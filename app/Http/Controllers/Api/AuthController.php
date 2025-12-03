@@ -170,4 +170,122 @@ class AuthController extends Controller
         }
         return null;
     }
+
+    /**
+     * Check if email exists in any account table
+     */
+    public function checkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->email;
+        
+        // Check in all account tables
+        $account = null;
+        $accountType = null;
+
+        // Check HR accounts
+        $hrAccount = HRAccount::where('email', $email)->first();
+        if ($hrAccount) {
+            $account = $hrAccount;
+            $accountType = 'hr';
+        }
+
+        // Check Manager/COO accounts
+        if (!$account) {
+            $managerAccount = ManagerCOOAccount::where('email', $email)->first();
+            if ($managerAccount) {
+                $account = $managerAccount;
+                $accountType = 'manager_coo';
+            }
+        }
+
+        // Check User accounts
+        if (!$account) {
+            $userAccount = User::where('email', $email)->first();
+            if ($userAccount) {
+                $account = $userAccount;
+                $accountType = 'user';
+            }
+        }
+
+        if (!$account) {
+            return response()->json([
+                'exists' => false,
+                'message' => 'Email not found in any account',
+            ], 404);
+        }
+
+        return response()->json([
+            'exists' => true,
+            'account_type' => $accountType,
+            'name' => $account->name,
+        ]);
+    }
+
+    /**
+     * Reset password for an account
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'new_password' => 'required|min:6',
+        ]);
+
+        $email = $request->email;
+        $newPassword = $request->new_password;
+        
+        // Find account in all tables
+        $account = null;
+        $accountType = null;
+
+        // Check HR accounts
+        $hrAccount = HRAccount::where('email', $email)->first();
+        if ($hrAccount) {
+            $account = $hrAccount;
+            $accountType = 'hr';
+        }
+
+        // Check Manager/COO accounts
+        if (!$account) {
+            $managerAccount = ManagerCOOAccount::where('email', $email)->first();
+            if ($managerAccount) {
+                $account = $managerAccount;
+                $accountType = 'manager_coo';
+            }
+        }
+
+        // Check User accounts
+        if (!$account) {
+            $userAccount = User::where('email', $email)->first();
+            if ($userAccount) {
+                $account = $userAccount;
+                $accountType = 'user';
+            }
+        }
+
+        if (!$account) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email not found',
+            ], 404);
+        }
+
+        // Update password
+        $account->password = Hash::make($newPassword);
+        $account->save();
+
+        Log::info('Password reset successful', [
+            'email' => $email,
+            'account_type' => $accountType,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password updated successfully',
+        ]);
+    }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AssignmentController;
 use App\Http\Controllers\Api\HRAccountController;
+use App\Http\Controllers\Api\IncidentReportController;
 use App\Http\Controllers\Api\ManagerCOOAccountController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\PositionController;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/check-email', [AuthController::class, 'checkEmail']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
@@ -132,5 +135,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{userId}', [MessageController::class, 'getMessages']);
         Route::post('/', [MessageController::class, 'sendMessage']);
         Route::put('/{userId}/read', [MessageController::class, 'markAsRead']);
+    });
+
+    // Incident Report routes
+    Route::prefix('incident-reports')->group(function () {
+        Route::get('/', [IncidentReportController::class, 'index']);
+        Route::get('/my-reports', [IncidentReportController::class, 'myReports']);
+        Route::post('/', [IncidentReportController::class, 'store']);
+        Route::get('/{id}', [IncidentReportController::class, 'show']);
+        Route::put('/{id}/status', [IncidentReportController::class, 'updateStatus']);
+        Route::delete('/{id}', [IncidentReportController::class, 'destroy']);
     });
 });
