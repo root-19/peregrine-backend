@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\ProcurementController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\DocumentFolderController;
 use App\Http\Controllers\Api\ProjectFolderController;
 use App\Http\Controllers\Api\SubfolderController;
 use App\Http\Controllers\Api\UserController;
@@ -79,6 +80,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [SubfolderController::class, 'show']);
         Route::put('/{id}', [SubfolderController::class, 'update']);
         Route::delete('/{id}', [SubfolderController::class, 'destroy']);
+    });
+
+    // Document Folder routes
+    Route::prefix('document-folders')->group(function () {
+        Route::get('/', [DocumentFolderController::class, 'index']);
+        Route::post('/', [DocumentFolderController::class, 'store']);
+        Route::get('/{id}', [DocumentFolderController::class, 'show']);
+        Route::put('/{id}', [DocumentFolderController::class, 'update']);
+        Route::delete('/{id}', [DocumentFolderController::class, 'destroy']);
     });
 
     // Position routes
