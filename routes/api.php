@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AssignmentController;
 use App\Http\Controllers\Api\HRAccountController;
 use App\Http\Controllers\Api\IncidentReportController;
 use App\Http\Controllers\Api\ManagerCOOAccountController;
+use App\Http\Controllers\Api\MaterialRequestController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\ProcurementController;
@@ -145,5 +146,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [IncidentReportController::class, 'show']);
         Route::put('/{id}/status', [IncidentReportController::class, 'updateStatus']);
         Route::delete('/{id}', [IncidentReportController::class, 'destroy']);
+    });
+
+    // Material Request routes
+    Route::prefix('material-requests')->group(function () {
+        Route::get('/', [MaterialRequestController::class, 'index']);
+        Route::get('/my-requests', [MaterialRequestController::class, 'myRequests']);
+        Route::post('/', [MaterialRequestController::class, 'store']);
+        Route::get('/{id}', [MaterialRequestController::class, 'show']);
+        Route::put('/{id}/status', [MaterialRequestController::class, 'updateStatus']);
+        Route::delete('/{id}', [MaterialRequestController::class, 'destroy']);
     });
 });
